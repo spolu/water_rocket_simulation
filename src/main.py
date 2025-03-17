@@ -44,11 +44,12 @@ def save_data_to_csv(trajectory_data, output_dir):
         f.write(f"Water Expulsion Time: {trajectory_data['water_expulsion_time']:.2f} s\n")
         f.write(f"Total Flight Time: {trajectory_data['flight_time']:.2f} s\n")
         f.write("\nRocket Parameters:\n")
-        f.write(f"- Bottle Volume: {config.BOTTLE_VOLUME} L\n")
+        f.write(f"- Number of Bottles: {config.NUM_BOTTLES}\n")
+        f.write(f"- Bottle Volume: {config.BOTTLE_VOLUME} L (per bottle)\n")
         f.write(f"- Water Fill: {config.WATER_VOLUME_FRACTION * 100:.1f}%\n")
         f.write(f"- Initial Pressure: {config.INITIAL_PRESSURE / 1000:.1f} kPa (gauge)\n")
-        f.write(f"- Nozzle Diameter: {config.NOZZLE_DIAMETER * 1000:.1f} mm\n")
-        f.write(f"- Rocket Mass (empty): {config.BOTTLE_MASS + config.PAYLOAD_MASS:.3f} kg\n")
+        f.write(f"- Nozzle Diameter: {config.NOZZLE_DIAMETER * 1000:.1f} mm (per nozzle)\n")
+        f.write(f"- Rocket Mass (empty): {(config.BOTTLE_MASS * config.NUM_BOTTLES) + config.PAYLOAD_MASS:.3f} kg\n")
         f.write("========================================\n")
 
 
@@ -65,6 +66,8 @@ def parse_arguments():
                         help='Nozzle diameter in mm')
     parser.add_argument('--launch-angle', type=float, default=config.LAUNCH_ANGLE,
                         help='Launch angle in degrees (0 = vertical, positive angles towards positive x direction)')
+    parser.add_argument('--num-bottles', type=int, default=config.NUM_BOTTLES,
+                        help='Number of bottles attached together')
     parser.add_argument('--save-data', action='store_true',
                         help='Save data to CSV files in output directory')
     parser.add_argument('--sweep', action='store_true',
@@ -79,6 +82,7 @@ def update_config(args):
     config.BOTTLE_VOLUME = args.bottle_volume
     config.WATER_VOLUME_FRACTION = args.water_fraction
     config.INITIAL_PRESSURE = args.pressure * 1000  # Convert kPa to Pa
+    config.NUM_BOTTLES = args.num_bottles
     config.NOZZLE_DIAMETER = args.nozzle_diameter / 1000  # Convert mm to m
     config.NOZZLE_AREA = 3.14159 * (config.NOZZLE_DIAMETER/2)**2
     config.LAUNCH_ANGLE = args.launch_angle
@@ -165,7 +169,7 @@ def water_fraction_sweep(launch_angle=15.0, n_values=10):
     max_heights = []
     max_distances = []
     
-    print(f"Running water fraction sweep with {n_values} values and launch angle of {launch_angle} degrees...")
+    print(f"Running water fraction sweep with {n_values} values, launch angle of {launch_angle} degrees, and {config.NUM_BOTTLES} bottles...")
     
     # Get a colormap for the trajectories
     import matplotlib as mpl
@@ -206,7 +210,7 @@ def water_fraction_sweep(launch_angle=15.0, n_values=10):
                  color=color, 
                  label=f"Water: {water_fractions[i]*100:.1f}%")
     
-    plt.title(f'Water Rocket 2D Trajectories (Launch Angle: {launch_angle}°)')
+    plt.title(f'Water Rocket 2D Trajectories (Launch Angle: {launch_angle}°, Bottles: {config.NUM_BOTTLES})')
     plt.xlabel('Horizontal Distance (m)')
     plt.ylabel('Height (m)')
     
@@ -222,7 +226,7 @@ def water_fraction_sweep(launch_angle=15.0, n_values=10):
     # Plot water fraction vs max height
     plt.figure(figsize=(10, 6))
     plt.plot(water_fractions, max_heights, 'o-')
-    plt.title('Effect of Water Fill on Maximum Height')
+    plt.title(f'Effect of Water Fill on Maximum Height (Bottles: {config.NUM_BOTTLES})')
     plt.xlabel('Water Volume Fraction')
     plt.ylabel('Maximum Height (m)')
     plt.grid(True)
@@ -232,7 +236,7 @@ def water_fraction_sweep(launch_angle=15.0, n_values=10):
     # Plot water fraction vs horizontal distance
     plt.figure(figsize=(10, 6))
     plt.plot(water_fractions, max_distances, 'o-')
-    plt.title('Effect of Water Fill on Horizontal Distance')
+    plt.title(f'Effect of Water Fill on Horizontal Distance (Bottles: {config.NUM_BOTTLES})')
     plt.xlabel('Water Volume Fraction')
     plt.ylabel('Horizontal Distance (m)')
     plt.grid(True)
@@ -241,7 +245,7 @@ def water_fraction_sweep(launch_angle=15.0, n_values=10):
     
     # Print parameter sweep results
     print("\n=== WATER FRACTION SWEEP RESULTS ===")
-    print("Effect of Water Fill on Maximum Height and Horizontal Distance")
+    print(f"Effect of Water Fill on Maximum Height and Horizontal Distance (Bottles: {config.NUM_BOTTLES})")
     print("-" * 70)
     print("Water Fill %\tMax Height (m)\tHorizontal Distance (m)")
     

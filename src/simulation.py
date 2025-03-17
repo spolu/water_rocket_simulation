@@ -15,13 +15,13 @@ def initialize_state():
     Returns:
         Dictionary containing initial state values
     """
-    # Calculate initial water volume in m^3
-    water_volume = (config.BOTTLE_VOLUME / 1000) * config.WATER_VOLUME_FRACTION
+    # Calculate initial water volume in m^3 (per bottles)
+    water_volume = (config.BOTTLE_VOLUME / 1000) * config.WATER_VOLUME_FRACTION 
     
-    # Calculate initial air volume in m^3
+    # Calculate initial air volume in m^3 (per bottles)
     air_volume = (config.BOTTLE_VOLUME / 1000) * (1 - config.WATER_VOLUME_FRACTION)
-    
-    # Calculate initial water mass
+
+    # Calculate initial water mass (for all bottles)
     water_mass = water_volume * config.WATER_DENSITY
     
     # Initial state dictionary

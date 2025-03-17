@@ -16,7 +16,7 @@ def calculate_mass(state):
     Returns:
         Total mass in kg
     """
-    return config.BOTTLE_MASS + state['water_mass'] + config.PAYLOAD_MASS
+    return ((config.BOTTLE_MASS + state['water_mass'])* config.NUM_BOTTLES) +  config.PAYLOAD_MASS
 
 
 def calculate_water_mass(water_volume):
@@ -80,11 +80,12 @@ def calculate_water_acceleration(state):
     # v = sqrt(2 * pressure_diff / water_density)
     water_velocity = math.sqrt(2 * pressure_diff / config.WATER_DENSITY)
     
-    # Calculate water mass flow rate
+    # Calculate water mass flow rate (per nozzle)
     # dm/dt = density * area * velocity
-    water_mass_flow_rate = config.WATER_DENSITY * config.NOZZLE_AREA * water_velocity
+    water_mass_flow_rate_per_nozzle = config.WATER_DENSITY * config.NOZZLE_AREA * water_velocity
     
-    return water_mass_flow_rate
+    # Total mass flow rate for all nozzles
+    return water_mass_flow_rate_per_nozzle
 
 
 def calculate_thrust(state):
@@ -110,11 +111,11 @@ def calculate_thrust(state):
         pressure_diff = max(0, state['air_pressure'] - config.ATMOSPHERIC_PRESSURE)
         air_velocity = math.sqrt(2 * pressure_diff / air_density)
         
-        # Calculate air mass flow rate
+        # Calculate air mass flow rate (per nozzle)
         air_mass_flow_rate = air_density * config.NOZZLE_AREA * air_velocity
         
-        # Thrust = mass flow rate * velocity
-        return air_mass_flow_rate * air_velocity
+        # Thrust = mass flow rate * velocity * number of nozzles
+        return air_mass_flow_rate * air_velocity * config.NUM_BOTTLES
     else:
         # Water thrust phase
         # Ensure pressure difference is positive to avoid math domain error
@@ -122,8 +123,8 @@ def calculate_thrust(state):
         water_velocity = math.sqrt(2 * pressure_diff / config.WATER_DENSITY)
         water_mass_flow_rate = config.WATER_DENSITY * config.NOZZLE_AREA * water_velocity
         
-        # Thrust = mass flow rate * velocity
-        return water_mass_flow_rate * water_velocity
+        # Thrust = mass flow rate * velocity * number of nozzles
+        return water_mass_flow_rate * water_velocity * config.NUM_BOTTLES
 
 
 def calculate_drag(state):

@@ -12,10 +12,11 @@ TEMPERATURE = 293.15  # K (20°C)
 LAUNCH_ANGLE = 10.0  # degrees (0 = vertical, positive angles towards positive x direction)
 
 # Rocket parameters
-BOTTLE_VOLUME = 2.5  # liters
-BOTTLE_MASS = 0.05  # kg
+NUM_BOTTLES = 3  # number of bottles attached together
+BOTTLE_VOLUME = 2.5  # liters (per bottle)
+BOTTLE_MASS = 0.05  # kg (per bottle)
 WATER_VOLUME_FRACTION = 0.4  # fraction of bottle filled with water
-NOZZLE_DIAMETER = 0.01  # m
+NOZZLE_DIAMETER = 0.01  # m (per nozzle)
 NOZZLE_AREA = 3.14159 * (NOZZLE_DIAMETER/2)**2  # m^2
 DRAG_COEFFICIENT = 0.3  # dimensionless
 ROCKET_DIAMETER = 0.12  # m
