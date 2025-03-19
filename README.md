@@ -41,3 +41,7 @@ Edit the parameters in `config.py` to customize your rocket design:
 - Initial pressure
 - Rocket mass
 - Drag coefficient
+
+## Results
+
+https://docs.google.com/document/d/1Srto5KWjno-RugxnTcJEyrzmvGAMo33tbGts9GtUuLM/edit?tab=t.0
